@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Debug C/C++ Addon",
+          "type": "lldb",
+          "request": "launch",
+          "preLaunchTask": "npm: build:dev",
+          "program": "node",
+          "args": ["${workspaceFolder}/index.js"]
+      }
+  ]
+}

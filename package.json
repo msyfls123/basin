@@ -1,0 +1,30 @@
+{
+  "name": "basin",
+  "version": "1.0.0",
+  "description": "Node.js Addons",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node-gyp build",
+    "build:dev": "node-gyp rebuild --debug",
+    "configure": "node-gyp configure",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msyfls123/basin.git"
+  },
+  "keywords": [
+    "node-gyp"
+  ],
+  "author": "Kimi",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/msyfls123/basin/issues"
+  },
+  "homepage": "https://github.com/msyfls123/basin#readme",
+  "devDependencies": {
+    "nan": "^2.15.0",
+    "node-gyp": "^8.1.0"
+  }
+}
