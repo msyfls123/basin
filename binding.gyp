@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "basin",
-      "sources": ["src/main.cc"],
+      "sources": ["src/addon.cc"],
       "include_dirs": [
         "<!(node -e \"require('nan')\")"
       ]

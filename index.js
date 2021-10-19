@@ -1,3 +1,6 @@
-const helloAddon = require('./build/Debug/basin.node')
+const addon = require('./build/Debug/basin');
 
-console.log('output:', helloAddon.hello())
+const { func } = addon;
+console.log(func());
+console.log(func[0]);
+console.log(func.test);
