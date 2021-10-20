@@ -1,5 +1,5 @@
 #include <node.h>
-
+#include <Carbon/Carbon.h>
 namespace demo {
 
 using v8::Isolate;
@@ -31,6 +31,7 @@ void Init(Local<Object> exports) {
   HandleScope scope(isolate);
   Local<Context> context = isolate->GetCurrentContext();
   Local<FunctionTemplate> t = FunctionTemplate::New(isolate, Method);
+  NODE_SET_PROTOTYPE_METHOD(t, "hhh", Method);
   Local<Function> fn = t->GetFunction(context).ToLocalChecked();
   Local<String> name = String::NewFromUtf8(isolate, "func").ToLocalChecked();
   fn->SetName(name);
