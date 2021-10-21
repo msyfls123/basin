@@ -14,6 +14,14 @@
           {
             "target_name": "mac",
             "sources": ["src/mac/native.m"]
+          },
+          {
+            "target_name": "gui",
+            "sources": ["src/mac/gui.m"],
+            'libraries': [
+              '-framework Foundation',
+              '-framework AppKit'
+            ]
           }
         ]
       }]
