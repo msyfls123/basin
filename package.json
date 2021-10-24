@@ -8,7 +8,8 @@
     "build": "node-gyp build",
     "build:dev": "node-gyp rebuild --debug",
     "configure": "node-gyp configure",
-    "start": "node index.js"
+    "start": "node index.js",
+    "ele": "electron ele.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/msyfls123/basin#readme",
   "devDependencies": {
+    "electron": "^15.3.0",
     "nan": "^2.15.0",
     "node-gyp": "^8.1.0"
   }
