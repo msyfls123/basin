@@ -5,20 +5,25 @@
 
 /* ========= create native app start ========== */
 
-@interface MyAppDelegate : NSObject <NSApplicationDelegate>
+static napi_value MyGUIMethod(napi_env env, napi_callback_info info) 
 {
-    NSWindow *window;
-}
-@end
 
-@implementation MyAppDelegate
+        // get electron view
 
--(id) init
-{
-    self = [super init];
-    if (self)
-    {
-        // total *main* screen frame size //
+        size_t nArgs = 32;
+        napi_value inputArgs[32];
+        napi_value thisObj;
+        
+        napi_get_cb_info(env, info, &nArgs, inputArgs, &thisObj, NULL);
+
+        void *pointer;
+        size_t length;
+        napi_status status = napi_get_buffer_info(env, inputArgs[0], &pointer, &length);
+
+        NSView *handleView = *reinterpret_cast<NSView**>(pointer);
+
+        // create native window
+
         NSRect mainDisplayRect = [[NSScreen mainScreen] frame];
 
         // calculate the window rect to be half the display and be centered //
@@ -35,54 +40,28 @@
          NSMiniaturizableWindowMask
          NSResizableWindowMask
          */
-        NSUInteger windowStyle = NSTitledWindowMask | NSMiniaturizableWindowMask;
+        NSUInteger windowStyle = NSTitledWindowMask | NSMiniaturizableWindowMask | NSClosableWindowMask | NSResizableWindowMask;
 
-        // set the window level to be on top of everything else //
         NSInteger windowLevel = NSMainMenuWindowLevel + 1;
 
-        // initialize the window and its properties // just examples of properties that can be changed //
-        window = [[NSWindow alloc] initWithContentRect:windowRect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
+        NSWindow* window = [[NSWindow alloc] initWithContentRect:windowRect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
         [window setLevel:windowLevel];
-        [window setOpaque:YES];
+        // [window setOpaque:YES];
         [window setHasShadow:YES];
-        [window setPreferredBackingLocation:NSWindowBackingLocationVideoMemory];
-        [window setHidesOnDeactivate:NO];
+        // [window setPreferredBackingLocation:NSWindowBackingLocationVideoMemory];
+        // [window setHidesOnDeactivate:NO];
         [window setBackgroundColor:[NSColor greenColor]];
-    }
-    return self;
-}
 
-- (void)applicationWillFinishLaunching:(NSNotification *)notification
-{
-    // make the window visible when the app is about to finish launching //
-    [window makeKeyAndOrderFront:self];
-    /* do layout and cool stuff here */
-}
+        // set content and show window
+        [window setContentView:handleView];
+        [NSApp activateIgnoringOtherApps:YES];
+        [window makeKeyAndOrderFront:nil];
 
-- (void)applicationDidFinishLaunching:(NSNotification*)aNotification
-{
-    /* initialize your code stuff here */
-}
-
-- (void)dealloc
-{
-    // release your window and other stuff //
-    [window release];
-    [super dealloc];
-}
-
-@end
-
-
-static napi_value MyGUIMethod(napi_env env, napi_callback_info info) 
-{
-
-    @autoreleasepool
-    {
-        NSApplication *app = [NSApplication sharedApplication];
-        [app setDelegate:[[[MyAppDelegate alloc] init] autorelease]];
-        [app run];
-    }
+        NSString *success = @"success";
+        const char *cStringSuck = [success cStringUsingEncoding:NSASCIIStringEncoding];
+        napi_value resultSuck;
+        napi_create_string_utf8(env, cStringSuck, NAPI_AUTO_LENGTH, &resultSuck);
+        return resultSuck;
 }
 
 /* ========= create native app end ========== */
@@ -124,7 +103,8 @@ static napi_value GetSize(napi_env env, napi_callback_info info)
 napi_value Init(napi_env env, napi_value exports) 
 {
     napi_property_descriptor guiDesc = { "getSize", 0, GetSize, 0, 0, 0, napi_default, 0 };
-    napi_define_properties(env, exports, 1, (napi_property_descriptor[]){guiDesc});
+    napi_property_descriptor createNativeDesc = { "createNative", 0, MyGUIMethod, 0, 0, 0, napi_default, 0 };
+    napi_define_properties(env, exports, 2, (napi_property_descriptor[]){guiDesc, createNativeDesc});
     
     return exports;
 }
