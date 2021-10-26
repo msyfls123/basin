@@ -46,14 +46,25 @@ static napi_value MyGUIMethod(napi_env env, napi_callback_info info)
 
         NSWindow* window = [[NSWindow alloc] initWithContentRect:windowRect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
         [window setLevel:windowLevel];
-        // [window setOpaque:YES];
         [window setHasShadow:YES];
-        // [window setPreferredBackingLocation:NSWindowBackingLocationVideoMemory];
-        // [window setHidesOnDeactivate:NO];
+        [window setPreferredBackingLocation:NSWindowBackingLocationVideoMemory];
+        [window setHidesOnDeactivate:YES];
         [window setBackgroundColor:[NSColor greenColor]];
 
         // set content and show window
+        NSRect viewRect = NSMakeRect(300,
+                                     0,
+                                     mainDisplayRect.size.width * 0.5 - 300,
+                                     mainDisplayRect.size.height * 0.5);
+        NSView *content = [[NSView alloc] initWithFrame:viewRect];
+        // [content setOpaque: NO];
+        [content setBackgroundColor:[NSColor greenColor]];
+
+        handleView.autoresizingMask = 0;
+        [handleView setWantsLayer:YES];
         [window setContentView:handleView];
+        [handleView addSubview:content];
+
         [NSApp activateIgnoringOtherApps:YES];
         [window makeKeyAndOrderFront:nil];
 
