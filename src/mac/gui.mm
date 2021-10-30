@@ -60,6 +60,13 @@ static napi_value MyGUIMethod(napi_env env, napi_callback_info info)
         // [content setOpaque: NO];
         [content setBackgroundColor:[NSColor greenColor]];
 
+        NSString *btnText = @"戳我";
+        NSRect rect = NSMakeRect(100, 100, 60, 30);
+        NSButton *button = [[NSButton alloc] initWithFrame:rect];
+        button.title = btnText;
+        [button setButtonType:NSButtonTypePushOnPushOff];
+        [content addSubview:button];
+
         handleView.autoresizingMask = 0;
         [handleView setWantsLayer:YES];
         [window setContentView:handleView];
