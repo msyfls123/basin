@@ -1,4 +1,4 @@
-const addon = require('./build/Debug/basin');
+const addon = require('../build/Debug/basin');
 
 const { func } = addon;
 console.log(func());

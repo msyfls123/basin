@@ -43,12 +43,40 @@ static napi_value MyIntMethod(napi_env env, napi_callback_info info)
     }
 }
 
+static napi_value CallbackMethod(napi_env env, napi_callback_info info)
+{
+    @autoreleasepool {
+        size_t nArgs = 32;
+        napi_value inputArgs[32];
+        napi_value thisObj;
+
+        // 拿到 callback 函数 
+        napi_get_cb_info(env, info, &nArgs, inputArgs, &thisObj, NULL);
+        napi_value cb = inputArgs[0];
+
+        napi_status status;
+        napi_value item;
+
+        const char *cString = [@"hello" cStringUsingEncoding:NSASCIIStringEncoding];
+        status = napi_create_string_utf8(env, cString, NAPI_AUTO_LENGTH, &item);
+        // 创建回调参数的数组
+        napi_value args[1] = { item };
+        
+        status = napi_call_function(env, thisObj, cb, 1, args, NULL);
+
+        napi_value result;
+        napi_create_int32(env, 0, &result);
+        return result;
+    }
+}
+
 
 napi_value Init(napi_env env, napi_value exports) 
 {
     napi_property_descriptor stringDesc = { "stringMethod", 0, MyStringMethod, 0, 0, 0, napi_default, 0 };
     napi_property_descriptor intDesc = { "intMethod", 0, MyIntMethod, 0, 0, 0, napi_default, 0 };
-    napi_define_properties(env, exports, 2, (napi_property_descriptor[]){stringDesc, intDesc});
+    napi_property_descriptor callbackDesc = { "callback", 0, CallbackMethod, 0, 0, 0, napi_default, 0 };
+    napi_define_properties(env, exports, 3, (napi_property_descriptor[]){stringDesc, intDesc, callbackDesc});
     
     return exports;
 }

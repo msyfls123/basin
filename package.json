@@ -8,8 +8,9 @@
     "build": "node-gyp build",
     "build:dev": "node-gyp rebuild --debug",
     "configure": "node-gyp configure",
-    "start": "node index.js",
-    "ele": "electron ele.js"
+    "basin": "node script/basin.js",
+    "mac": "node script/mac.js",
+    "ele": "electron script/ele.js"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,4 @@
-const gui = require('./build/Debug/gui');
+const gui = require('../build/Debug/gui');
 
 const { app, BrowserWindow } = require('electron');
 
