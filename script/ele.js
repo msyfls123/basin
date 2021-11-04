@@ -14,6 +14,6 @@ app.whenReady().then(() => {
 
   const nativeHandle = win.getNativeWindowHandle();
 
-  console.log(gui.createNative(nativeHandle));
+  console.log(gui.createNative(nativeHandle, console.log));
   console.log(gui.getSize(nativeHandle));
 });

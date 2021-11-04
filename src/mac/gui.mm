@@ -2,6 +2,70 @@
 #include <node_api.h>
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+#import "gui.h"
+
+/* Copied from https://gist.github.com/alexdrone/2634534. */
+@implementation BlockInvocation
+
+-(id)initWithBlock:(void *)aBlock {
+    if (self = [self init]) {
+        block = (void *)[(void (^)(void))aBlock copy];
+    }
+
+    return self;
+}
+
++(BlockInvocation *)invocationWithBlock:(void *)aBlock {
+    return [[[self alloc] initWithBlock:aBlock] autorelease];
+}
+
+-(void)perform {
+    ((void (^)(void))block)();
+}
+
+-(void)performWithObject:(id)anObject {
+    ((void (^)(id arg1))block)(anObject);
+}
+
+-(void)performWithObject:(id)anObject object:(id)anotherObject {
+    ((void (^)(id arg1, id arg2))block)(anObject, anotherObject);
+}
+
+-(void)dealloc {
+    [(void (^)(void))block release];
+    [super dealloc];
+}
+
+@end
+
+static void CallJs(napi_env env, napi_value js_cb, void* context, void *data) {
+    NSLog(@"hello");
+    napi_status status;
+    napi_value item;
+
+    const char *cString2 = [@"world" cStringUsingEncoding:NSUTF8StringEncoding];
+    status = napi_create_string_utf8(env, cString2, NAPI_AUTO_LENGTH, &item);
+
+    if (status != napi_ok) {                                      
+        const napi_extended_error_info* error_info = NULL;          
+        napi_get_last_error_info((env), &error_info);               
+        bool is_pending;                                            
+        napi_is_exception_pending((env), &is_pending);              
+        if (!is_pending) {                                          
+            const char* message = (error_info->error_message == NULL) 
+                ? "empty error message"                               
+                : error_info->error_message;                          
+            NSLog([NSString stringWithUTF8String:message]);                                              \
+        }                                                           
+    }
+
+    napi_value args[1] = { item };
+    napi_value undefined;
+    status = napi_get_undefined(env, &undefined);
+    
+    status = napi_call_function(env, undefined, js_cb, 1, args, NULL);
+}
+
 
 /* ========= create native app start ========== */
 
@@ -15,6 +79,8 @@ static napi_value MyGUIMethod(napi_env env, napi_callback_info info)
         napi_value thisObj;
         
         napi_get_cb_info(env, info, &nArgs, inputArgs, &thisObj, NULL);
+
+        napi_value cb = inputArgs[1];
 
         void *pointer;
         size_t length;
@@ -63,6 +129,33 @@ static napi_value MyGUIMethod(napi_env env, napi_callback_info info)
         NSString *btnText = @"戳我";
         NSRect rect = NSMakeRect(100, 100, 60, 30);
         NSButton *button = [[NSButton alloc] initWithFrame:rect];
+
+
+        napi_value async_resource_name;
+        napi_create_string_utf8(env, "ate test callback", NAPI_AUTO_LENGTH, &async_resource_name);
+        napi_threadsafe_function safe_cb;
+        status = napi_create_threadsafe_function(
+            env,
+            cb,
+            NULL,
+            async_resource_name,
+            0,
+            1,
+            NULL,
+            NULL,
+            NULL,
+            CallJs,
+            &safe_cb
+        );
+
+        BlockInvocation *invocation = [[BlockInvocation alloc] initWithBlock:^(id sender) {
+            NSLog(@"Button with title %@ was clicked", [(NSButton *)sender title]);
+            napi_call_threadsafe_function(safe_cb, NULL, napi_tsfn_blocking);
+        }];
+
+        [button setTarget:invocation];
+        [button setAction:@selector(performWithObject:)];
+
         button.title = btnText;
         [button setButtonType:NSButtonTypePushOnPushOff];
         [content addSubview:button];
