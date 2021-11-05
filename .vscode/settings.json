@@ -4,5 +4,6 @@
   "python.linting.enabled": true,
   "files.associations": {
     "*.h": "objective-c"
-  }
+  },
+  "clang-format.language.objective-cpp.style": "file"
 }
