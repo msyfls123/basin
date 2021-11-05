@@ -1,49 +1,14 @@
-// https://stackoverflow.com/a/15958586
-#include <node_api.h>
-#import <Foundation/Foundation.h>
-#import <AppKit/AppKit.h>
 #import "gui.h"
+#import "helper/block_invocation.mm"
 
-/* Copied from https://gist.github.com/alexdrone/2634534. */
-@implementation BlockInvocation
-
--(id)initWithBlock:(void *)aBlock {
-    if (self = [self init]) {
-        block = (void *)[(void (^)(void))aBlock copy];
-    }
-
-    return self;
-}
-
-+(BlockInvocation *)invocationWithBlock:(void *)aBlock {
-    return [[[self alloc] initWithBlock:aBlock] autorelease];
-}
-
--(void)perform {
-    ((void (^)(void))block)();
-}
-
--(void)performWithObject:(id)anObject {
-    ((void (^)(id arg1))block)(anObject);
-}
-
--(void)performWithObject:(id)anObject object:(id)anotherObject {
-    ((void (^)(id arg1, id arg2))block)(anObject, anotherObject);
-}
-
--(void)dealloc {
-    [(void (^)(void))block release];
-    [super dealloc];
-}
-
-@end
-
-static void CallJs(napi_env env, napi_value js_cb, void* context, void *data) {
-    NSLog(@"hello");
+static void CallJs(napi_env env, napi_value js_cb, void* context, void* data) {
     napi_status status;
     napi_value item;
 
-    const char *cString2 = [@"world" cStringUsingEncoding:NSUTF8StringEncoding];
+    // should be the same type after `safe_cb`
+    NSString* value = reinterpret_cast<NSString*>(data);
+
+    const char *cString2 = [value cStringUsingEncoding:NSUTF8StringEncoding];
     status = napi_create_string_utf8(env, cString2, NAPI_AUTO_LENGTH, &item);
 
     if (status != napi_ok) {                                      
@@ -149,8 +114,9 @@ static napi_value MyGUIMethod(napi_env env, napi_callback_info info)
         );
 
         BlockInvocation *invocation = [[BlockInvocation alloc] initWithBlock:^(id sender) {
-            NSLog(@"Button with title %@ was clicked", [(NSButton *)sender title]);
-            napi_call_threadsafe_function(safe_cb, NULL, napi_tsfn_blocking);
+            NSString *btn_title = [(NSButton *)sender title];
+            NSLog(@"Button with title %@ was clicked", btn_title);
+            napi_call_threadsafe_function(safe_cb, btn_title, napi_tsfn_blocking);
         }];
 
         [button setTarget:invocation];

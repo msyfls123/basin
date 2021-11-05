@@ -17,7 +17,7 @@
           },
           {
             "target_name": "gui",
-            "sources": ["src/mac/gui.h", "src/mac/gui.mm"],
+            "sources": ["src/mac/gui.mm"],
             'libraries': [
               '-framework Foundation',
               '-framework AppKit',
