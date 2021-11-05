@@ -1,4 +1,5 @@
 #import "gui.h"
+#import "helper/log_status.mm"
 #import "helper/block_invocation.mm"
 
 static void CallJs(napi_env env, napi_value js_cb, void* context, void* data) {
@@ -11,18 +12,7 @@ static void CallJs(napi_env env, napi_value js_cb, void* context, void* data) {
     const char *cString2 = [value cStringUsingEncoding:NSUTF8StringEncoding];
     status = napi_create_string_utf8(env, cString2, NAPI_AUTO_LENGTH, &item);
 
-    if (status != napi_ok) {                                      
-        const napi_extended_error_info* error_info = NULL;          
-        napi_get_last_error_info((env), &error_info);               
-        bool is_pending;                                            
-        napi_is_exception_pending((env), &is_pending);              
-        if (!is_pending) {                                          
-            const char* message = (error_info->error_message == NULL) 
-                ? "empty error message"                               
-                : error_info->error_message;                          
-            NSLog([NSString stringWithUTF8String:message]);                                              \
-        }                                                           
-    }
+    log_status(status, env);
 
     napi_value args[1] = { item };
     napi_value undefined;
