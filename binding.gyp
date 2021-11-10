@@ -18,10 +18,14 @@
           {
             "target_name": "gui",
             "sources": ["src/mac/gui.mm"],
+            "dependencies": ["<(module_root_dir)/conan_build/conanbuildinfo.gyp:nlohmann_json"],
+            "xcode_settings": {
+              "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
+            },
             'libraries': [
               '-framework Foundation',
               '-framework AppKit',
-              '-framework Cocoa'
+              "-Wl,-rpath,@loader_path/"
             ]
           }
         ]

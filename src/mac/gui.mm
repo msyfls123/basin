@@ -2,6 +2,8 @@
 #import "helper/log_status.mm"
 #import "helper/block_invocation.mm"
 
+using namespace nlohmann;
+
 static void CallJs(napi_env env, napi_value js_cb, void* context, void* data) {
     napi_status status;
     napi_value item;
@@ -138,6 +140,13 @@ static napi_value GetSize(napi_env env, napi_callback_info info)
 {
     @autoreleasepool
     {
+
+        json j;
+        j["name"] = "Kimi";
+        std::string str = j.dump();
+        NSString* mystring = [NSString stringWithUTF8String:str.c_str()];
+        NSLog(mystring);
+
         size_t nArgs = 32;
         napi_value inputArgs[32];
         napi_value thisObj;

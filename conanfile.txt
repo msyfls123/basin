@@ -1,0 +1,5 @@
+[requires]
+nlohmann_json/3.10.4
+
+[generators]
+node_gyp
