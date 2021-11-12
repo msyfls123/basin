@@ -1,5 +1,4 @@
 #include <node.h>
-#include <Carbon/Carbon.h>
 namespace demo {
 
 using v8::Isolate;
