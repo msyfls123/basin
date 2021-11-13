@@ -1,0 +1,52 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@main
+
+      - name: Install Conan GYP generator - clone
+        uses: sudosubin/git-clone-action@v1.0.1
+        with:
+          repository: czoido/conan-gyp-generator
+          path: conan-gyp-generator
+
+      - name: Install Conan GYP generator - install
+        run: conan config install gyp-generator.py -tf generators
+        working-directory: ./conan-gyp-generator
+
+      - name: Generate build info
+        run: |
+          mkdir conan_build && cd conan_build
+          conan install .. && cd ..
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.6.1'
+
+      - name: Install Dependencies
+        run: |
+          npm i
+
+      - name: Compile
+        run: |
+          npm run configure
+          npm run build:dev
+
+      - name: Archive debug artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            build/Debug/*.node
+            build/Debug/*.dylib
+      
