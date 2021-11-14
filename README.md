@@ -7,11 +7,7 @@ Node.js addons
 
 You should install [`Conan`](https://docs.conan.io/en/latest/installation.html#install) first, which manage our third-party C++ dependencies.
 
-Then, `npm i`.
-
-### **For MacOS User**
-
-
+### Install Conan dependencies
 
 Install Conan GYP generator.
 ```sh
@@ -26,12 +22,18 @@ mkdir conan_build && cd conan_build
 conan install .. && cd ..
 ```
 
-### Compile
+### Install node modules, configure and build
 
 ```sh
+npm i
 npm run configure
-npm run build:dev / npm run build
+npm run build:dev
 ```
+
+### Run
+
+Run Electron App with addons: `npm run ele`
+
 ## Thanks
 
 - Friend Link: https://iweiyun.github.io/2019/01/04/node-cpp-addon/
