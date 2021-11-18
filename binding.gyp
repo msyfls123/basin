@@ -7,6 +7,10 @@
         "<!(node -e \"require('nan')\")"
       ]
     },
+    {
+      "target_name": "defer",
+      "sources": ["src/lib.cpp"],
+    },
   ],
   "conditions": [
       ['OS=="mac"', {
