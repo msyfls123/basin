@@ -3,10 +3,13 @@
 
 class Defer {
   public:
-    Defer(const std::string &str);
-    void run(int milliseconds, std::function<void(std::string str)> complete);
+    Defer(char *str);
+    void run(int milliseconds, std::function<void(char *str)> complete);
+    static void Destructor(napi_env env, void* instance_ptr, void* /*finalize_hint*/);
     static napi_value define_es_class(napi_env env);
+    static napi_value es_constructor(napi_env env, napi_callback_info info);
+    static napi_value es_run(napi_env env, napi_callback_info info);
     napi_ref _ref;
   private:
-    const std::string &_str;
+    char *_str;
 };
