@@ -9,6 +9,7 @@ class Defer {
     static napi_value define_es_class(napi_env env);
     static napi_value es_constructor(napi_env env, napi_callback_info info);
     static napi_value es_run(napi_env env, napi_callback_info info);
+    static void thread_resolve_run_promise(napi_env env, napi_value js_cb, void* context, void* data);
     napi_ref _ref;
   private:
     char *_str;
