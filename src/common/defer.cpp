@@ -39,7 +39,8 @@ napi_value Defer::es_run(napi_env env, napi_callback_info info)
   napi_value es_this;
   status = napi_get_cb_info(env, info, &arg_count, args, &es_this, nullptr);
   int milliseconds;
-  napi_get_value_int32(env, args[0], &milliseconds);
+  status = napi_get_value_int32(env, args[0], &milliseconds);
+  log_status(env, status);
 
   Defer *defer = nullptr;
   status = napi_unwrap(env, es_this, reinterpret_cast<void **>(&defer));
@@ -49,36 +50,29 @@ napi_value Defer::es_run(napi_env env, napi_callback_info info)
   status = napi_create_promise(env, &deferred, &promise);
 
   napi_value async_resource_name;
-  napi_create_string_utf8(env, "ate test callback", NAPI_AUTO_LENGTH, &async_resource_name);
-  napi_threadsafe_function callback;
+  napi_create_string_utf8(env, "ate test callback", NAPI_AUTO_LENGTH,
+                          &async_resource_name);
+  napi_threadsafe_function thread_complete;
   status = napi_create_threadsafe_function(
-    env,
-    nullptr,
-    nullptr,
-    async_resource_name,
-    0,
-    1,
-    nullptr,
-    nullptr,
-    deferred,
-    Defer::thread_resolve_run_promise,
-    &callback
-  );
+      env, nullptr, nullptr, async_resource_name, 0, 1, nullptr, nullptr,
+      deferred, Defer::thread_resolve_run_promise, &thread_complete);
 
-  std::function<void(char *)> complete =
-      [=](char *str) {
-        napi_call_threadsafe_function(callback, str, napi_tsfn_blocking);
-      };
+  std::function<void(char *)> complete = [=](char *str) {
+    napi_call_threadsafe_function(thread_complete, str, napi_tsfn_blocking);
+  };
   defer->run(milliseconds, complete);
   return promise;
 }
 
-void Defer::thread_resolve_run_promise(napi_env env, napi_value js_cb, void* context, void* data) {
+void Defer::thread_resolve_run_promise(napi_env env, napi_value js_cb,
+                                       void *context, void *data)
+{
   napi_deferred deferred = reinterpret_cast<napi_deferred>(context);
   char *str = reinterpret_cast<char *>(data);
   napi_value js_str;
   napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &js_str);
   napi_resolve_deferred(env, deferred, js_str);
+  deferred = nullptr;
 };
 
 napi_value Defer::es_constructor(napi_env env, napi_callback_info info)
@@ -100,8 +94,8 @@ napi_value Defer::es_constructor(napi_env env, napi_callback_info info)
       "property_key", 0, 0, 0, 0, property_value, napi_enumerable, 0};
   napi_define_properties(env, es_this, 1,
                          (napi_property_descriptor[]){strDesc});
-  status = napi_wrap(env, es_this, reinterpret_cast<void*>(instance), Defer::Destructor, nullptr,
-            &instance->_ref);
+  status = napi_wrap(env, es_this, reinterpret_cast<void *>(instance),
+                     Defer::Destructor, nullptr, &instance->_ref);
   return es_this;
 }
 
