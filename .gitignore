@@ -1,5 +1,6 @@
 node_modules/
 build/
 conan_build/
+prebuilds/
 
 .DS_Store

@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "description": "Node.js Addons",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "prebuilds/**"
+  ],
   "scripts": {
+    "install": "node-gyp-build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node-gyp build",
-    "build:dev": "node-gyp rebuild --debug",
     "configure": "node-gyp configure",
+    "build:dev": "node-gyp rebuild --debug --gui=1",
+    "build:mac": "prebuildify --napi --arch x64+arm64",
+    "build:windows": "prebuildify --napi --platform win32 --arch x64+ia32",
+    "build:linux": "prebuildify --napi --platform linux --arch x64+ia32",
     "basin": "node script/basin.js",
     "mac": "node script/mac.js",
     "ele": "electron script/ele.js"
@@ -28,6 +35,10 @@
   "devDependencies": {
     "electron": "^15.3.0",
     "nan": "^2.15.0",
-    "node-gyp": "^8.1.0"
+    "node-gyp": "^8.1.0",
+    "prebuildify": "^5.0.0"
+  },
+  "dependencies": {
+    "node-gyp-build": "^4.3.0"
   }
 }

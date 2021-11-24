@@ -1,6 +1,3 @@
-const { Defer } = require('./build/Debug/defer.node')
-const p = new Defer('子曾经曰过');
+const { Defer } = require('node-gyp-build')(__dirname);
 
-p.run(2000).then((data) => console.log('from native', data));
-
-setTimeout(process.exit, 2050);
+module.exports = { Defer };

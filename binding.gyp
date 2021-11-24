@@ -1,19 +1,22 @@
 {
+  "variables": {
+    "gui": 0,
+  },
   "targets": [
+    # {
+    #   "target_name": "legacy",
+    #   "sources": ["src/legacy.cpp"],
+    #   "include_dirs": [
+    #     "<!(node -e \"require('nan')\")"
+    #   ]
+    # },
     {
       "target_name": "basin",
-      "sources": ["src/main.cpp"],
-      "include_dirs": [
-        "<!(node -e \"require('nan')\")"
-      ]
-    },
-    {
-      "target_name": "defer",
       "sources": ["src/lib.cpp"],
     },
   ],
   "conditions": [
-      ['OS=="mac"', {
+      ['OS == "mac" and gui == 1', {
         "targets": [
           {
             "target_name": "mac",
@@ -24,7 +27,10 @@
             "sources": ["src/mac/gui.mm"],
             "dependencies": ["<(module_root_dir)/conan_build/conanbuildinfo.gyp:nlohmann_json"],
             "xcode_settings": {
-              "GCC_ENABLE_CPP_EXCEPTIONS": "YES"
+              "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
+              # "CLANG_CXX_LIBRARY": "libc++",
+              # "CLANG_CXX_LANGUAGE_STANDARD":"c++17",
+              'MACOSX_DEPLOYMENT_TARGET': '10.15',
             },
             'libraries': [
               '-framework Foundation',

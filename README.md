@@ -46,3 +46,4 @@ Run Electron App with addons: `npm run ele`
 - Call JS From C++ thread - https://github.com/huarunlin/node-ate-tbox
 - Conan gyp generator - https://czoido.github.io/posts/node-native-module-conan/
 - Configure rpath - https://github.com/nodejs/node-gyp/issues/1397#issuecomment-375960087
+- Use C++17, target macOS 10.15 - https://github.com/nodejs/node-gyp/issues/1662#issuecomment-720021022

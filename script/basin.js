@@ -1,7 +1,7 @@
-const addon = require('../build/Debug/basin');
+const path = require('path')
+const { Defer } = require('node-gyp-build')(path.resolve())
+const p = new Defer('子曾经曰过');
 
-const { func } = addon;
-console.log(func());
-console.log(func[0]);
-console.log(func.test);
-console.log((new func).hhh());
+p.run(2000).then((data) => console.log('from native', data));
+
+setTimeout(process.exit, 2050);
