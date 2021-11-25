@@ -13,6 +13,17 @@
     {
       "target_name": "basin",
       "sources": ["src/lib.cpp"],
+      "cflags": [ "-fno-exceptions" ],
+      "cflags_cc": [ "-fno-exceptions", "-std=c++17" ],
+      "conditions": [
+        ['OS=="win"', {
+          "msvs_settings": {
+            "VCCLCompilerTool": {
+              "AdditionalOptions": [ "-std:c++17" ],
+            },
+          },
+        }]
+      ],
     },
   ],
   "conditions": [
