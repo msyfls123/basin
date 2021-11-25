@@ -1,4 +1,5 @@
 #include <string>
+#include <functional>
 #include <node_api.h>
 
 class Defer {
