@@ -4,10 +4,28 @@ on: push
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.platform.runner }}
+    env:
+      CXX: g++
+    strategy:
+      matrix:
+        platform:
+          [
+            { runner: "windows-latest", command: "build:windows" },
+            { runner: "macos-latest", command: "build:mac" },
+            { runner: "ubuntu-latest", command: "build:linux" },
+          ]
+      fail-fast: false
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v2
+
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+        if: ${{ matrix.platform.runner == 'ubuntu-latest' }}
 
       - name: Install Conan
         id: conan
@@ -27,26 +45,33 @@ jobs:
         run: |
           mkdir conan_build && cd conan_build
           conan install .. && cd ..
+        shell: bash
 
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v2
         with:
-          node-version: '16.6.1'
+          node-version: "16.6.1"
 
       - name: Install Dependencies
         run: |
-          npm i
+          npm i --ignore-scripts
 
       - name: Compile
         run: |
           npm run configure
-          npm run build:dev
+          npm run ${{ matrix.platform.command }}
+
+      - name: Try execution
+        run: |
+          node -e "(new (require('./index').Defer)('Hello world')).run(1234).then((...args) => {console.log(...args);process.exit()})"
+        continue-on-error: true
 
       - name: Archive debug artifacts
         uses: actions/upload-artifact@v2
         with:
           name: build
           path: |
-            build/Debug/*.node
-            build/Debug/*.dylib
-      
+            index.js
+            index.d.ts
+            package.json
+            prebuilds/
