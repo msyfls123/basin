@@ -92,8 +92,9 @@ napi_value Defer::es_constructor(napi_env env, napi_callback_info info)
                           &property_value);
   napi_property_descriptor strDesc = {
       "property_key", 0, 0, 0, 0, property_value, napi_enumerable, 0};
+  napi_property_descriptor descs[] = {strDesc};
   napi_define_properties(env, es_this, 1,
-                         (napi_property_descriptor[]){strDesc});
+                         descs);
   status = napi_wrap(env, es_this, reinterpret_cast<void *>(instance),
                      Defer::Destructor, nullptr, &instance->_ref);
   return es_this;
@@ -109,8 +110,9 @@ napi_value Defer::define_es_class(napi_env env)
   napi_property_descriptor runDesc = {"run", 0, Defer::es_run,           0,
                                       0,     0, napi_default_jsproperty, 0};
   napi_value es_ctor;
+  napi_property_descriptor descs[2] = {desc, runDesc};
   napi_define_class(env, "Deferrered", NAPI_AUTO_LENGTH, es_constructor,
-                    nullptr, 2, (napi_property_descriptor[]){desc, runDesc},
+                    nullptr, 2, descs,
                     &es_ctor);
   napi_create_reference(env, es_ctor, 1, &ctor_ref);
   return es_ctor;
