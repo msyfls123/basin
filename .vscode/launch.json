@@ -2,12 +2,28 @@
   "version": "0.2.0",
   "configurations": [
       {
-          "name": "Debug C/C++ Addon",
+          "name": "run mac",
           "type": "lldb",
           "request": "launch",
-          "preLaunchTask": "npm: build:dev",
+          "preLaunchTask": "npm: build:mac",
           "program": "node",
-          "args": ["${workspaceFolder}/index.js"]
-      }
+          "args": ["${workspaceFolder}/script/basin.js"]
+      },
+      {
+          "name": "run windows",
+          "type": "lldb",
+          "request": "launch",
+          "preLaunchTask": "npm: build:windows",
+          "program": "node",
+          "args": ["${workspaceFolder}/script/basin.js"]
+      },
+      {
+          "name": "run linux",
+          "type": "lldb",
+          "request": "launch",
+          "preLaunchTask": "npm: build:linux",
+          "program": "node",
+          "args": ["${workspaceFolder}/script/basin.js"]
+    }
   ]
 }

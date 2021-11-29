@@ -15,3 +15,8 @@ class Defer {
   private:
     char *_str;
 };
+
+struct Engima {
+  const char* name;
+  int delay;
+};

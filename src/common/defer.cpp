@@ -58,7 +58,10 @@ napi_value Defer::es_run(napi_env env, napi_callback_info info)
       deferred, Defer::thread_resolve_run_promise, &thread_complete);
 
   std::function<void(char *)> complete = [=](char *str) {
-    napi_call_threadsafe_function(thread_complete, str, napi_tsfn_blocking);
+    Engima *eng = new Engima;
+    eng->name = str;
+    eng->delay = milliseconds;
+    napi_call_threadsafe_function(thread_complete, eng, napi_tsfn_blocking);
   };
   defer->run(milliseconds, complete);
   return promise;
@@ -68,9 +71,9 @@ void Defer::thread_resolve_run_promise(napi_env env, napi_value js_cb,
                                        void *context, void *data)
 {
   napi_deferred deferred = reinterpret_cast<napi_deferred>(context);
-  char *str = reinterpret_cast<char *>(data);
+  Engima *eng = reinterpret_cast<Engima *>(data);
   napi_value js_str;
-  napi_create_string_utf8(env, str, NAPI_AUTO_LENGTH, &js_str);
+  napi_create_string_utf8(env, eng->name, NAPI_AUTO_LENGTH, &js_str);
   napi_resolve_deferred(env, deferred, js_str);
   deferred = nullptr;
 };
